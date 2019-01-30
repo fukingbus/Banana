@@ -1,17 +1,18 @@
 package com.bus.banana
 
+import android.app.Activity
 import android.app.Service
 import android.content.Intent
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.N)
 class TileService: TileService() {
-
-    private var tileEnabled = false
 
     override fun onStartListening() {
         //
@@ -25,17 +26,10 @@ class TileService: TileService() {
 
     override fun onClick() {
         UT.Log("on tile click")
-        tileEnabled = !tileEnabled
-        /*val tile = qsTile
-        tile.label = if(tileEnabled) "Recording..." else "Record Screen"
-        tile.state = if(tileEnabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.updateTile()*/
-        if(tileEnabled)
-            initDialog()
+        val intent = Intent(this,MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivityAndCollapse(intent)
         super.onClick()
-    }
-
-    private fun initDialog(){
-
     }
 }
