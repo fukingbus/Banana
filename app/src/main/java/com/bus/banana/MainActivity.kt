@@ -16,8 +16,6 @@ import androidx.appcompat.widget.SwitchCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    private var projectionStatusText: TextView? = null
-    private var virtualDisplayStatusText: TextView? = null
     private var previewSurface: SurfaceView? = null
     //
     private var projectionManager: MediaProjectionManager? = null
@@ -37,14 +35,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init(){
-        val projectionSwitch = findViewById<SwitchCompat>(R.id.mediaProjectionSwitch)
-        val virtualDisplaySwitch = findViewById<SwitchCompat>(R.id.virtualDisplaySwitch)
-        projectionSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+        mediaProjectionSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
             if(isChecked){
                 requestProjection()
             }
             else{
-                projectionStatusText?.text = "Idle"
+                mediaProjectionStatusText?.text = "Idle"
                 mediaProjection?.stop()
                 mediaProjection = null
                 virtualDisplaySwitch.isEnabled = false
@@ -59,8 +55,6 @@ class MainActivity : AppCompatActivity() {
                 stopMirroring()
             }
         }
-        projectionStatusText = findViewById(R.id.mediaProjectionStatusText)
-        virtualDisplayStatusText = findViewById(R.id.virtualDisplayStatusText)
         previewSurface = findViewById(R.id.previewSurface)
     }
 
@@ -81,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         val metrics = resources.displayMetrics
         virtualDisplay = mediaProjection?.createVirtualDisplay(
                 "PREVIEW",
-                previewSurface!!.width,previewSurface!!.height, metrics.densityDpi,
+                720,1280, metrics.densityDpi,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 previewSurface?.holder?.surface, null, null
         )
@@ -89,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun readyForRecord(){
-        projectionStatusText!!.text = "Ready"
+        mediaProjectionStatusText!!.text = "Ready"
         virtualDisplaySwitch!!.isEnabled = true
     }
 
@@ -99,6 +93,9 @@ class MainActivity : AppCompatActivity() {
                 if(resultCode == Activity.RESULT_OK){
                     mediaProjection = projectionManager!!.getMediaProjection(resultCode,data)
                     readyForRecord()
+                }
+                else{
+                    mediaProjectionSwitch.isChecked = false
                 }
             }
         }
